@@ -1,6 +1,6 @@
 # This image provides a postgres installation from which to run backups 
 # FROM registry.access.redhat.com/rhscl/python-36-rhel7
-FROM registry.access.redhat.com/rhel7-atomic
+FROM registry.access.redhat.com/rhel7-atomic:7.6
 
 # Set the workdir to be root
 WORKDIR /
