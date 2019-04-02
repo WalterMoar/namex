@@ -31,4 +31,6 @@ USER 26
 RUN echo "* * * * * test touch /tmp/giver" > /tmp/file
 
 # Set the default CMD.
-CMD /usr/bin/go-crond -v --allow-unprivileged /tmp/file 2>&1 > /tmp/foo
+#CMD /usr/bin/go-crond -v --allow-unprivileged /tmp/file 2>&1 > /tmp/foo
+
+CMD /usr/bin/go-crond -v --allow-unprivileged /tmp/file
