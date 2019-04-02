@@ -29,4 +29,6 @@ RUN chmod ug+x /usr/bin/go-crond
 USER 26
 
 # Set the default CMD.
-#CMD sh /backup.sh
+RUN touch /tmp/foo
+RUN bash
+#RUN /usr/bin/go-crond
