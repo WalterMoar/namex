@@ -28,7 +28,9 @@ RUN chmod ug+x /usr/bin/go-crond
 # Important - Reset to the base image's user account.
 USER 26
 
+RUN echo "* * * * * test touch /tmp/giver" > /tmp/file
+
 # Set the default CMD.
-RUN touch /tmp/foo
-RUN bash
-#RUN /usr/bin/go-crond
+RUN /usr/bin/go-crond -v --allow-unprivileged /tmp/file
+
+#go-crond -v --allow-unprivileged ${BACKUP_CONF}
