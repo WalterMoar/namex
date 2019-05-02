@@ -1,7 +1,15 @@
 <dataConfig>
-    <dataSource type="com.s24.search.solr.analysis.jdbc.DataImportJdbcDataSource" dataSource="jdbc/bcrs_names" />
+    <dataSource name="names-ds" type="com.s24.search.solr.analysis.jdbc.DataImportJdbcDataSource"
+                dataSource="jdbc/postgresql" />
 
     <document>
-        <entity name="name_instance" pk="id" query="SELECT * FROM bc_registries_names.solr_dataimport_names_vw" />
+        <entity name="name" pk="id"
+                query="SELECT id, name FROM solr_names_core_vw WHERE state = 'ACTIVE'"
+                deltaImportQuery="SELECT id, name FROM solr_names_core_vw WHERE id = '${dih.delta.id}'"
+                deltaQuery="SELECT id FROM solr_names_core_vw WHERE state = 'ACTIVE' AND last_modified &gt;
+                        TO_TIMESTAMP('${dih.last_index_time}', 'YYYY-MM-DD HH24:MI:SS')"
+                deletedPkQuery="SELECT id FROM solr_names_core_vw WHERE state = 'INACTIVE' AND last_modified &gt;
+                        TO_TIMESTAMP('${dih.last_index_time}', 'YYYY-MM-DD HH24:MI:SS')"
+        />
     </document>
 </dataConfig>

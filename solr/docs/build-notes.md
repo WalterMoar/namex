@@ -21,23 +21,29 @@ Logged into "https://console.pathfinder.gov.bc.ca:8443" as "<username>" using th
 You have access to the following projects and can switch between them with 'oc project <projectname>':
 
     servicebc-ne-dev
+    servicebc-ne-prod
     servicebc-ne-test
   * servicebc-ne-tools
 
 Using project "servicebc-ne-tools".
 ```
 
-(Note that you could also run `oc login` and enter the same credentials).
-
-
 ## The configmap
 
 Solr currently needs a configmap that defines the data sources. We should probably get rid of this configmap - at the
 moment the only difference between environments is the route to the PostgreSQL foreign data wrappers. Ideally these
-should be read from environment variables, and the configmap perhaps stores in the GitHub repository.
+should be read from environment variables, and the configmap perhaps stored in the GitHub repository.
 
 However, until the above above is complete, the `solr-datasources` configmap is required - copy it from an existing
 environment and update as needed.
+
+## Creating the `Solr` imagestream
+
+If the imagestream does not exist, it needs to be created.
+
+```
+C:\> oc -n servicebc-ne-tools create imagestream solr
+```
 
 ## Creating and Replacing the `solr` Build
 
@@ -83,7 +89,7 @@ In the OpenShift Web Console go to the `names examination (tools)` project, and 
 it is recent. 
 
 In the OpenShift Web Console go to the `names examination (tools)` project, and then `Builds` > `Images`. Click the
-`solr` image and the tag `Latest` should now have been updated. The image needs to be tagged in order to get it into a
+`solr` image and the tag `latest` should now have been updated. The image needs to be tagged in order to get it into a
 specific environment.
 
 ### Replacing the `solr` Build

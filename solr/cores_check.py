@@ -1,4 +1,5 @@
 
+import datetime
 import enum
 import json
 import sys
@@ -59,9 +60,9 @@ def get_database_connection_string(core, username):
 
 def get_database_view_name(core):
     if core == SolrCore.NAMES:
-        view_name = 'bc_registries_names.solr_dataimport_names_vw'
+        view_name = 'bc_registries_names.solr_dataimport_namesfix_vw'
     elif core == SolrCore.CONFLICTS_CORP:
-        view_name = 'bc_registries.solr_dataimport_conflicts_vw'
+        view_name = 'bc_registries.solr_dataimport_conflictsfix_vw'
     elif core == SolrCore.CONFLICTS_NR:
         view_name = 'bc_registries_names.solr_dataimport_conflicts_vw'
     else:
@@ -74,11 +75,15 @@ def compare(solr_core, environment, username):
     # Pull down everything.
     connection = psycopg2.connect(get_database_connection_string(solr_core, username))
     cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute('SELECT * FROM ' + get_database_view_name(solr_core))
+    print("{} Before Oracle".format(datetime.datetime.now()))
+    cursor.execute('SELECT id, name FROM ' + get_database_view_name(solr_core))
+    print("{} After Oracle".format(datetime.datetime.now()))
     print("{} results in Oracle".format(cursor.rowcount))
     oracle_results = cursor.fetchall()
 
+    print("{} Before Solr".format(datetime.datetime.now()))
     solr_results = requests.get(get_solr_url(solr_core, environment))
+    print("{} After Solr".format(datetime.datetime.now()))
     if solr_results.status_code != 200:
         print('Solr: {} ({})'.format(solr_results.reason, solr_results.status_code))
 
@@ -120,8 +125,6 @@ def compare(solr_core, environment, username):
     print('In view but not in Solr core: ' + str(sorted(only_in_oracle)))
     print('In Solr core but not in view: ' + str(sorted(only_in_solr)))
 
-    # Next: compare the actual data.
-
     in_both = oracle_key_set.intersection(solr_key_set)
     for key in in_both:
         solr = solr_results_dict[key]
@@ -131,7 +134,7 @@ def compare(solr_core, environment, username):
             # Convert missing values to empty strings.
             try:
                 solr_field = solr[field_name]
-            except KeyError as error:
+            except KeyError:
                 solr_field = ''
 
             # Convert nulls to empty strings.
@@ -143,13 +146,17 @@ def compare(solr_core, environment, username):
             if str(solr_field) != str(oracle_field):
                 print('Error with id={}: field {} has the Solr value "{}", but the value in Oracle is "{}"'
                       .format(key, field_name, solr_field, oracle_field))
-                print(solr)
-                print(oracle)
+                # print(solr)
+                # print(oracle)
 
 
 # Remember to:
-#   C:> start /b oc port-forward postgres-oracle-fdw-registry-<pod_id> 54322:5432
-#   C:> start /b oc port-forward postgresql-oracle-fdw-names-<pod_id> 54323:5432
+#   $ oc port-forward postgres-oracle-fdw-registry-<pod_id> 54322:5432 &
+#   $ oc port-forward postgresql-oracle-fdw-names-<pod_id> 54323:5432 &
+
+# compare(SolrCore.NAMES, Environment.LOCAL, 'USER_XXXX')
+# compare(SolrCore.CONFLICTS_CORP, Environment.LOCAL, 'USER_XXXX')
+# compare(SolrCore.CONFLICTS_NR, Environment.LOCAL, 'USER_XXXX')
 
 # compare(SolrCore.NAMES, Environment.DEV, 'USER_XXXX')
 # compare(SolrCore.CONFLICTS_CORP, Environment.DEV, 'USER_XXXX')
@@ -161,4 +168,4 @@ def compare(solr_core, environment, username):
 
 # compare(SolrCore.NAMES, Environment.PROD, 'USER_XXXX')
 # compare(SolrCore.CONFLICTS_CORP, Environment.PROD, 'USER_XXXX')
-compare(SolrCore.CONFLICTS_NR, Environment.PROD, 'USER_XXXX')
+# compare(SolrCore.CONFLICTS_NR, Environment.PROD, 'USER_XXXX')
