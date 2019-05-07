@@ -1,6 +1,5 @@
 <dataConfig>
-    <dataSource name="names-ds" type="com.s24.search.solr.analysis.jdbc.DataImportJdbcDataSource"
-                dataSource="jdbc/postgresql" />
+    <dataSource type="com.s24.search.solr.analysis.jdbc.DataImportJdbcDataSource" dataSource="jdbc/postgresql" />
 
     <document>
         <entity name="name" pk="id"
