@@ -3,7 +3,7 @@
 #FROM registry.access.redhat.com/rhel7-atomic:7.6
 
 # works but Python 2.7.5 FROM registry.access.redhat.com/rhel7
-FROM registry.access.redhat.com/rhel8/python-36
+FROM registry.access.redhat.com/rhel8/python-36:1-24
 
 
 #RUN microdnf --enablerepo=rhel-7-server-rpms \
