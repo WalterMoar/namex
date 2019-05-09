@@ -1,7 +1,10 @@
 # This image provides a postgres installation from which to run backups
 # FROM registry.access.redhat.com/rhscl/python-36-rhel7
 #FROM registry.access.redhat.com/rhel7-atomic:7.6
-FROM registry.access.redhat.com/rhel7
+
+# works but Python 2.7.5 FROM registry.access.redhat.com/rhel7
+FROM registry.access.redhat.com/rhel8/python-36
+
 
 #RUN microdnf --enablerepo=rhel-7-server-rpms \
 #install java-1.8.0-openjdk-headless --nodocs ;\
